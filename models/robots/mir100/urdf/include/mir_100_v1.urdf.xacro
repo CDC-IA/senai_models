@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:include filename="$(find mir_description)/urdf/include/common_properties.urdf.xacro" />
-  <xacro:include filename="$(find mir_description)/urdf/include/imu.gazebo.urdf.xacro" />
-  <xacro:include filename="$(find mir_description)/urdf/include/mir_100.gazebo.xacro" />
-  <xacro:include filename="$(find mir_description)/urdf/include/mir_100.transmission.xacro" />
-  <xacro:include filename="$(find mir_description)/urdf/include/sick_s300.urdf.xacro" />
+  <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/common_properties.urdf.xacro" />
+  <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/imu.gazebo.urdf.xacro" />
+  <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/mir_100.gazebo.xacro" />
+  <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/mir_100.transmission.xacro" />
+  <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/sick_s300.urdf.xacro" />
 
   <xacro:property name="deg_to_rad" value="0.017453293" />
 
@@ -45,14 +45,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://mir_description/meshes/visual/wheel.stl" />
+          <mesh filename="package://senai_models/models/${model_class}/${model}/meshes/visual/wheel.stl" />
         </geometry>
         <xacro:insert_block name="material_dark_grey" />
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://mir_description/meshes/visual/wheel.stl" />
+          <mesh filename="package://senai_models/models/${model_class}/${model}/meshes/visual/wheel.stl" />
         </geometry>
       </collision>
     </link>
@@ -87,14 +87,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://mir_description/meshes/visual/caster_wheel_base.stl" />
+          <mesh filename="package://senai_models/models/${model_class}/${model}/meshes/visual/caster_wheel_base.stl" />
         </geometry>
         <xacro:insert_block name="material_silver" />
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://mir_description/meshes/collision/caster_wheel_base.stl" />
+          <mesh filename="package://senai_models/models/${model_class}/${model}/meshes/collision/caster_wheel_base.stl" />
         </geometry>
       </collision>
     </link>
@@ -117,14 +117,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://mir_description/meshes/visual/wheel.stl" />
+          <mesh filename="package://senai_models/models/${model_class}/${model}/meshes/visual/wheel.stl" />
         </geometry>
         <xacro:insert_block name="material_dark_grey" />
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://mir_description/meshes/visual/wheel.stl" />
+          <mesh filename="package://senai_models/models/${model_class}/${model}/meshes/visual/wheel.stl" />
         </geometry>
       </collision>
     </link>
@@ -149,14 +149,14 @@
       <visual>
         <origin xyz="${mir_100_act_wheel_dx} 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://mir_description/meshes/visual/mir_100_base.stl" />
+          <mesh filename="package://senai_models/models/${model_class}/${model}/meshes/visual/mir_100_base.stl" />
         </geometry>
         <xacro:insert_block name="material_white" />
       </visual>
       <collision>
         <origin xyz="${mir_100_act_wheel_dx} 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://mir_description/meshes/collision/mir_100_base.stl" />
+          <mesh filename="package://senai_models/models/${model_class}/${model}/meshes/collision/mir_100_base.stl" />
         </geometry>
       </collision>
     </link>
