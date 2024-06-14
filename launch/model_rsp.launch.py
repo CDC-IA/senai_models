@@ -24,12 +24,14 @@ def generate_launch_description():
     model_arg = DeclareLaunchArgument(name='model', description='Set the model to configure (Ex: mir100)')
     model_name_arg = DeclareLaunchArgument(name='model_name', default_value=str(default_model_name), description='Set the model name (Ex: r2d2)')
     model_namespace_arg = DeclareLaunchArgument(name='model_namespace', default_value=str(""), description='Set the model namespace (Ex: /testNS)')
+    launch_rviz2_arg = DeclareLaunchArgument(name='launch_rviz2', default_value='true', description='Execute rviz2 automatically (Ex: false)')
 
     # Run the node
     return LaunchDescription([
-        model_arg, #OPTIONAL_ARG
+        model_arg,
         model_name_arg, #OPTIONAL_ARG
-        model_namespace_arg, #OPTIONAL_ARG
+        model_namespace_arg, #OPTIONAL_ARG,
+        launch_rviz2_arg, # OPTIONAL_ARG
         OpaqueFunction(function=launch_setup)
     ])
 
@@ -37,6 +39,7 @@ def launch_setup(context, *args, **kwargs):
     model = LaunchConfiguration('model').perform(context)
     model_name = LaunchConfiguration('model_name').perform(context)
     model_namespace = LaunchConfiguration('model_namespace').perform(context)
+    launch_rviz2 = LaunchConfiguration('launch_rviz2').perform(context)
 
     model_ns = model_namespace + "/" + model_name
 
@@ -48,6 +51,7 @@ def launch_setup(context, *args, **kwargs):
         model_class = default_class
     
     file_subpath = "models/"+model_class+"/"+model+"/urdf/"+model+".urdf.xacro"
+    rviz_subpath = "models/"+model_class+"/"+model+"/rviz/"+model+"_description.rviz"
 
     # Create a dictionary of xacro arguments
     xacro_args = {'model_name': model_name}
@@ -65,4 +69,19 @@ def launch_setup(context, *args, **kwargs):
         parameters=[{'robot_description': robot_description_raw}] # add other parameters here if required
     )
 
-    return [node_robot_state_publisher]
+    node_joint_state_publisher_gui = Node(
+        package='joint_state_publisher_gui',
+        executable='joint_state_publisher_gui',
+        output='screen',
+        namespace=[model_ns]
+    )
+
+    if (launch_rviz2):
+        node_rviz2 = Node(
+            package='rviz2',
+            executable='rviz2',
+            output='screen',
+            arguments=['-d', os.path.join(get_package_share_directory(pkg_name), rviz_subpath)] 
+        )    
+
+    return [node_robot_state_publisher, node_joint_state_publisher_gui, node_rviz2]
