@@ -2,14 +2,40 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
   <xacro:macro name="controller_plugin_gazebo" params="robot_namespace">
-    <gazebo>
-      <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-        <xacro:unless value="${robot_namespace == ''}">
-          <robotNamespace>${robot_namespace}</robotNamespace>
-        </xacro:unless>
-        <controlPeriod>0.001</controlPeriod>
-        <legacyModeNS>false</legacyModeNS>
-      </plugin>
-    </gazebo>
+    <xacro:if value="${gazebo_version == 'classic'}">
+      <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+          <xacro:unless value="${robot_namespace == ''}">
+            <robotNamespace>${robot_namespace}</robotNamespace>
+          </xacro:unless>
+          <controlPeriod>0.001</controlPeriod>
+          <legacyModeNS>false</legacyModeNS>
+        </plugin>
+      </gazebo>
+    </xacro:if>
+
+    <xacro:if value="${gazebo_version == 'ignition'}">
+      <ros2_control name="IgnitionSystem" type="system">
+        <hardware>
+          <plugin>ign_ros2_control/IgnitionSystem</plugin>
+        </hardware>
+        <joint name="${prefix}left_wheel_joint">
+          <command_interface name="velocity">
+            <param name="min">-1</param>
+            <param name="max">1</param>
+          </command_interface>
+          <state_interface name="position"/>
+          <state_interface name="velocity"/>
+        </joint>
+        <joint name="${prefix}right_wheel_joint">
+          <command_interface name="velocity">
+            <param name="min">-1</param>
+            <param name="max">1</param>
+          </command_interface>
+          <state_interface name="position"/>
+          <state_interface name="velocity"/>
+        </joint>
+      </ros2_control>
+    </xacro:if>
   </xacro:macro>
 </robot>

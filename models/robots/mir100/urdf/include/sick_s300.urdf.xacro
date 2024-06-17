@@ -60,10 +60,12 @@
             <stddev>0.01</stddev>
           </noise>
         </ray>
-        <plugin name="gazebo_ros_${link}_controller" filename="libgazebo_ros_laser.so">
-          <frameName>${prefix}${link}</frameName>
-          <topicName>${topic}</topicName>
-        </plugin>
+        <xacro:if value="${gazebo_version == 'classic'}">
+          <plugin name="gazebo_ros_${link}_controller" filename="libgazebo_ros_laser.so">
+            <frameName>${prefix}${link}</frameName>
+            <topicName>${topic}</topicName>
+          </plugin>
+        </xacro:if>
       </sensor>
     </gazebo>
   </xacro:macro>
