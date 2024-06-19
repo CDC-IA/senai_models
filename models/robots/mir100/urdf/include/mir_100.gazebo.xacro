@@ -26,11 +26,24 @@
       </xacro:if>
 
       <xacro:if value="${gazebo_version == 'ignition'}">
-        <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
-          <ros>
-            <namespace>/$(arg model_name)</namespace>
-          </ros>
-          <parameters>$(find senai_models)/models/${model_class}/${model}/config/$(arg gazebo_version)/${model}_controllers.yaml</parameters>
+        <plugin filename="ignition-gazebo-diff-drive-system" name="gz::sim::systems::DiffDrive">
+          <left_joint>${left_wheel_joint}</left_joint>
+          <right_joint>${right_wheel_joint}</right_joint>
+          <wheel_separation>${wheel_separation}</wheel_separation>
+          <wheel_radius>${wheel_radius}</wheel_radius>
+          <!--
+          <topic>/cmd_vel</topic>
+          <odom_topic>/odom</odom_topic>
+          <odom_publish_frequency>1</odom_publish_frequency>
+          -->
+          <max_linear_acceleration>2.0</max_linear_acceleration>
+          <min_linear_acceleration>-2.0</min_linear_acceleration>
+          <max_angular_acceleration>2.5</max_angular_acceleration>
+          <min_angular_acceleration>-2.5</min_angular_acceleration>
+          <max_linear_velocity>1.0</max_linear_velocity>
+          <min_linear_velocity>-1.0</min_linear_velocity>
+          <max_angular_velocity>1.5</max_angular_velocity>
+          <min_angular_velocity>-1.5</min_angular_velocity>
         </plugin>
       </xacro:if>
     </gazebo>
@@ -69,8 +82,8 @@
           <rpyOffsets>0 0 0</rpyOffsets>
         </plugin>
       </xacro:if>
-
-      
+      <xacro:if value="${gazebo_version == 'ignition'}">
+      </xacro:if>
     </gazebo>
   </xacro:macro>
 </robot>

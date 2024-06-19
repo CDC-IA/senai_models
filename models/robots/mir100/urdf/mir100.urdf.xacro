@@ -33,4 +33,12 @@
     wheel_radius="${mir_100_act_wheel_radius}"
   />
   
+  <gazebo>
+    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+      <ros>
+        <namespace>/$(arg model_name)</namespace>
+      </ros>
+      <parameters>$(find senai_models)/models/${model_class}/${model}/config/$(arg gazebo_version)/${model}_controllers.yaml</parameters>
+    </plugin>
+  </gazebo>
 </robot>
