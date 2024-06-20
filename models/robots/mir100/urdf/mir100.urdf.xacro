@@ -11,7 +11,7 @@
 
   <!-- MiR100 base -->
   <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/mir_100_v1.urdf.xacro" />
-  <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/common.gazebo.xacro" />
+  <!-- <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/common.gazebo.xacro" /> -->
 
   <xacro:arg name="tf_prefix" default="" />
   <xacro:property name="tf_prefix_" value="$(arg tf_prefix)" />
@@ -23,22 +23,102 @@
   </xacro:unless>
 
   <xacro:mir_100 prefix="${prefix}"/>
-  <xacro:controller_plugin_gazebo robot_namespace="$(arg model_name)"/>
+  <!-- <xacro:controller_plugin_gazebo robot_namespace="$(arg model_name)"/> -->
 
   <!-- instead of the controller_plugin_gazebo, you can use the diffdrive controller like this:-->
-  <xacro:diff_controller_plugin_gazebo prefix=""
+  <!-- <xacro:diff_controller_plugin_gazebo prefix=""
     left_wheel_joint="left_wheel_joint"
     right_wheel_joint="right_wheel_joint"
     wheel_separation="${2*mir_100_act_wheel_dy}"
     wheel_radius="${mir_100_act_wheel_radius}"
-  />
+  /> -->
   
-  <gazebo>
-    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
-      <ros>
-        <namespace>/$(arg model_name)</namespace>
-      </ros>
-      <parameters>$(find senai_models)/models/${model_class}/${model}/config/$(arg gazebo_version)/${model}_controllers.yaml</parameters>
-    </plugin>
-  </gazebo>
+  <!-- ros2_control parameters: -->
+  <xacro:if value="${gazebo_version == 'classic'}">
+    <ros2_control name="GazeboSystem" type="system">
+      <hardware>
+        <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+      </hardware>
+      <joint name="left_wheel_joint">
+        <command_interface name="velocity">
+            <param name="min">-10</param>
+            <param name="max">10</param>
+        </command_interface>
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+      <joint name="right_wheel_joint">
+          <command_interface name="velocity">
+              <param name="min">-10</param>
+              <param name="max">10</param>
+          </command_interface>
+          <state_interface name="velocity" />
+          <state_interface name="position" />
+      </joint>
+      <sensor name="imu_sensor">
+        <state_interface name="orientation.x" />
+        <state_interface name="orientation.y" />
+        <state_interface name="orientation.z" />
+        <state_interface name="orientation.w" />
+        <state_interface name="angular_velocity.x" />
+        <state_interface name="angular_velocity.y" />
+        <state_interface name="angular_velocity.z" />
+        <state_interface name="linear_acceleration.x" />
+        <state_interface name="linear_acceleration.y" />
+        <state_interface name="linear_acceleration.z" />
+      </sensor>
+    </ros2_control>
+    <gazebo>
+      <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+        <ros>
+          <namespace>/$(arg model_name)</namespace>
+        </ros>
+        <parameters>$(find senai_models)/models/${model_class}/${model}/config/$(arg gazebo_version)/${model}_controllers.yaml</parameters>
+      </plugin>
+    </gazebo>
+  </xacro:if>
+  
+  <xacro:if value="${gazebo_version == 'ignition'}">
+    <ros2_control name="IgnitionSystem" type="system">
+      <hardware>
+        <plugin>ign_ros2_control/IgnitionSystem</plugin>
+      </hardware>
+      <joint name="left_wheel_joint">
+        <command_interface name="velocity">
+            <param name="min">-10</param>
+            <param name="max">10</param>
+        </command_interface>
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+      <joint name="right_wheel_joint">
+          <command_interface name="velocity">
+              <param name="min">-10</param>
+              <param name="max">10</param>
+          </command_interface>
+          <state_interface name="velocity" />
+          <state_interface name="position" />
+      </joint>
+      <sensor name="imu_sensor">
+        <state_interface name="orientation.x" />
+        <state_interface name="orientation.y" />
+        <state_interface name="orientation.z" />
+        <state_interface name="orientation.w" />
+        <state_interface name="angular_velocity.x" />
+        <state_interface name="angular_velocity.y" />
+        <state_interface name="angular_velocity.z" />
+        <state_interface name="linear_acceleration.x" />
+        <state_interface name="linear_acceleration.y" />
+        <state_interface name="linear_acceleration.z" />
+      </sensor>
+    </ros2_control>
+    <gazebo>
+      <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+        <ros>
+          <namespace>/$(arg model_name)</namespace>
+        </ros>
+        <parameters>$(find senai_models)/models/${model_class}/${model}/config/$(arg gazebo_version)/${model}_controllers.yaml</parameters>
+      </plugin>
+    </gazebo>
+  </xacro:if>
 </robot>

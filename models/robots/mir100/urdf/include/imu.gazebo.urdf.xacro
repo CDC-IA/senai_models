@@ -18,7 +18,7 @@
         <always_on>true</always_on>
         <update_rate>100</update_rate>  <!-- this is not the publish rate -->
         <visualize>true</visualize>
-        <topic>__default_topic__</topic>
+        <topic>/model/$(arg model_name)/imu_data</topic>
         <plugin filename="ignition-gazebo-imu-system" name="gz::sim::systems::Imu">
           <topicName>${imu_topic}</topicName>
           <bodyName>${link}</bodyName>

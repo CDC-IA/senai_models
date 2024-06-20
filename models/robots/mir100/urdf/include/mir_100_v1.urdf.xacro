@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/common_properties.urdf.xacro" />
   <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/imu.gazebo.urdf.xacro" />
-  <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/mir_100.gazebo.xacro" />
+  <!-- <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/mir_100.gazebo.xacro" /> -->
   <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/mir_100.transmission.xacro" />
   <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/sick_s300.urdf.xacro" />
 

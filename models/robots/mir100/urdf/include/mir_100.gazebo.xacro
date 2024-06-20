@@ -14,8 +14,8 @@
           <wheelTorque>10</wheelTorque>
           <publishTf>1</publishTf>
           <odometryFrame>map</odometryFrame>
-          <commandTopic>mobile_base_controller/cmd_vel</commandTopic>
-          <odometryTopic>mobile_base_controller/odom</odometryTopic>
+          <commandTopic>/model/$(arg model_name)/cmd_vel</commandTopic>
+          <odometryTopic>/model/$(arg model_name)/odom</odometryTopic>
           <robotBaseFrame>base_footprint</robotBaseFrame>
           <wheelAcceleration>2.8</wheelAcceleration>
           <publishWheelJointState>true</publishWheelJointState>
@@ -24,28 +24,37 @@
           <rosDebugLevel>Debug</rosDebugLevel>
         </plugin>
       </xacro:if>
-
+      
       <xacro:if value="${gazebo_version == 'ignition'}">
-        <plugin filename="ignition-gazebo-diff-drive-system" name="gz::sim::systems::DiffDrive">
+        <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
           <left_joint>${left_wheel_joint}</left_joint>
           <right_joint>${right_wheel_joint}</right_joint>
-          <wheel_separation>${wheel_separation}</wheel_separation>
-          <wheel_radius>${wheel_radius}</wheel_radius>
-          <!--
-          <topic>/cmd_vel</topic>
-          <odom_topic>/odom</odom_topic>
-          <odom_publish_frequency>1</odom_publish_frequency>
-          -->
+          <!-- <wheel_separation>${wheel_separation}</wheel_separation>
+          <wheel_radius>${wheel_radius}</wheel_radius> -->
+          <wheel_separation>0.445</wheel_separation>
+          <wheel_radius>0.06</wheel_radius>
+
           <max_linear_acceleration>2.0</max_linear_acceleration>
+          
+          <topic>/model/$(arg model_name)/cmd_vel</topic>
+          <odom_topic>/model/$(arg model_name)/odom</odom_topic>
+          <tf_topic>/model/$(arg model_name)/tf</tf_topic>
+
+          <frame_id>odom</frame_id>
+          <child_frame_id>base_footprint</child_frame_id>
+
+          <odom_publish_frequency>30</odom_publish_frequency> 
+          <!-- <max_linear_acceleration>2.0</max_linear_acceleration>
           <min_linear_acceleration>-2.0</min_linear_acceleration>
           <max_angular_acceleration>2.5</max_angular_acceleration>
           <min_angular_acceleration>-2.5</min_angular_acceleration>
           <max_linear_velocity>1.0</max_linear_velocity>
           <min_linear_velocity>-1.0</min_linear_velocity>
           <max_angular_velocity>1.5</max_angular_velocity>
-          <min_angular_velocity>-1.5</min_angular_velocity>
+          <min_angular_velocity>-1.5</min_angular_velocity> -->
         </plugin>
       </xacro:if>
+     
     </gazebo>
   </xacro:macro>
 
@@ -69,8 +78,8 @@
   </xacro:macro>
 
   <xacro:macro name="p3d_base_controller" params="prefix">
-    <gazebo>
-      <xacro:if value="${gazebo_version == 'classic'}">
+    <xacro:if value="${gazebo_version == 'classic'}">
+      <gazebo>
         <plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
           <alwaysOn>true</alwaysOn>
           <updateRate>50.0</updateRate>
@@ -81,9 +90,9 @@
           <xyzOffsets>0 0 0</xyzOffsets>
           <rpyOffsets>0 0 0</rpyOffsets>
         </plugin>
-      </xacro:if>
-      <xacro:if value="${gazebo_version == 'ignition'}">
-      </xacro:if>
-    </gazebo>
+      </gazebo>
+    </xacro:if>
+    <xacro:if value="${gazebo_version == 'ignition'}">
+    </xacro:if>
   </xacro:macro>
 </robot>

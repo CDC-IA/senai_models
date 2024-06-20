@@ -1,8 +1,8 @@
 import os, re, yaml
 from ament_index_python.packages import get_package_share_directory
 
-from launch_ros.actions import Node
 from launch import LaunchDescription
+from launch_ros.actions import Node, SetParameter
 from launch.substitutions import LaunchConfiguration
 from launch_ros.substitutions import FindPackageShare
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -17,7 +17,7 @@ default_model = "mir100"
 default_model_name = "r2d2"
 
 #Choose between "ignition" or "classic"
-default_gazebo = "ignition"
+default_gazebo = "classic"
 default_world = "empty.sdf"
 
 # Models supported organized by class
@@ -35,6 +35,7 @@ def generate_launch_description():
 
     # Run the node
     return LaunchDescription([
+        SetParameter(name="use_sim_time", value=True),
         model_arg,
         model_name_arg, #OPTIONAL_ARG
         model_namespace_arg, #OPTIONAL_ARG,
@@ -117,21 +118,21 @@ def launch_setup(context, *args, **kwargs):
         if(default_gazebo == "classic"):
             robot_description_node_name = "/"+model_name+"/robot_description"
 
-            # node_gazebo = IncludeLaunchDescription(
-            #     PythonLaunchDescriptionSource(
-            #         [os.path.join(
-            #             FindPackageShare('gazebo_ros').find('gazebo_ros'), 'launch', 'gazebo.launch.py'
-            #         )]
-            #     )
-            # ),
-            # nodes.append(node_gazebo)
+            node_gazebo = IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(
+                    [os.path.join(
+                        FindPackageShare('gazebo_ros').find('gazebo_ros'), 'launch', 'gazebo.launch.py'
+                    )]
+                )
+            )
+            nodes.append(node_gazebo)
 
             node_gazebo_spawn = Node(
                 package='gazebo_ros',
                 executable='spawn_entity.py',
                 name='urdf_spawner',
                 output='screen',
-                arguments=["-topic", robot_description_node_name, "-entity", model_name+"_bot"]
+                arguments=["-topic", robot_description_node_name, "-entity", model_name]
             )
             nodes.append(node_gazebo_spawn)
 
@@ -164,41 +165,41 @@ def launch_setup(context, *args, **kwargs):
 
             nodes.append(node_gazebo_spawn)
 
-            # Loading controllers and broadcaster from ROS2 Control
+        # Loading controllers and broadcaster from ROS2 Control
 
-            # Regular expression pattern to find content between <parameters> and </parameters>
-            pattern = r"<parameters>(.*?)</parameters>"
+        # Regular expression pattern to find content between <parameters> and </parameters>
+        pattern = r"<parameters>(.*?)</parameters>"
 
-            # Search for the pattern
-            match = re.search(pattern, robot_description_raw, re.DOTALL)
+        # Search for the pattern
+        match = re.search(pattern, robot_description_raw, re.DOTALL)
 
-            # Check if a match is found
-            if match:
-                # Extract the content between <parameters> and </parameters>
-                controllers_yaml_file_path = match.group(1)
+        # Check if a match is found
+        if match:
+            # Extract the content between <parameters> and </parameters>
+            controllers_yaml_file_path = match.group(1)
 
-                # Read the YAML file from the path
-                try:
-                    with open(controllers_yaml_file_path, 'r') as file:
-                        yaml_content = yaml.safe_load(file)
+            # Read the YAML file from the path
+            try:
+                with open(controllers_yaml_file_path, 'r') as file:
+                    yaml_content = yaml.safe_load(file)
 
-                        for controller_name, _ in yaml_content["/**"]["controller_manager"]["ros__parameters"].items():
-                            if(controller_name != "update_rate"):
+                    for controller_name, _ in yaml_content["/**"]["controller_manager"]["ros__parameters"].items():
+                        if(controller_name != "update_rate"):
 
-                                # Spawning controller/broadcaster
-                                node_ros2_control = Node(
-                                    package='controller_manager',
-                                    executable='spawner',
-                                    namespace=model_name,
-                                    arguments=[controller_name],
-                                    output='screen',
-                                )
+                            # Spawning controller/broadcaster
+                            node_ros2_control = Node(
+                                package='controller_manager',
+                                executable='spawner',
+                                namespace=model_name,
+                                arguments=[controller_name],
+                                output='screen',
+                            )
 
-                                nodes.append(node_ros2_control)
+                            nodes.append(node_ros2_control)
 
-                except FileNotFoundError:
-                    print(f"File not found: {controllers_yaml_file_path}")
-                except yaml.YAMLError as exc:
-                    print("Error parsing YAML content:", exc)
+            except FileNotFoundError:
+                print(f"File not found: {controllers_yaml_file_path}")
+            except yaml.YAMLError as exc:
+                print("Error parsing YAML content:", exc)
 
     return nodes
