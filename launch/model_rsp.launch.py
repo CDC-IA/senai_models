@@ -132,7 +132,11 @@ def launch_setup(context, *args, **kwargs):
                 executable='spawn_entity.py',
                 name='urdf_spawner',
                 output='screen',
-                arguments=["-topic", robot_description_node_name, "-entity", model_name]
+                arguments=[
+                    "-topic", robot_description_node_name, 
+                    "-entity", model_name,
+                    "-z", "0.1",
+                ]
             )
             nodes.append(node_gazebo_spawn)
 
@@ -165,9 +169,11 @@ def launch_setup(context, *args, **kwargs):
 
             nodes.append(node_gazebo_spawn)
 
-        # Loading controllers and broadcaster from ROS2 Control
+        # ===============================================================
+        # ==== Loading controllers and broadcaster from ROS2 Control ====
+        # ===============================================================
 
-        # Regular expression pattern to find content between <parameters> and </parameters>
+        # Regular expression pattern to find content between <parameters> and </parameters>, getting the path of the *.yaml file using regex
         pattern = r"<parameters>(.*?)</parameters>"
 
         # Search for the pattern
@@ -175,14 +181,15 @@ def launch_setup(context, *args, **kwargs):
 
         # Check if a match is found
         if match:
-            # Extract the content between <parameters> and </parameters>
+            # Extract the content between <parameters> and </parameters>, path of the *.yaml file
             controllers_yaml_file_path = match.group(1)
 
-            # Read the YAML file from the path
+            # Open and Read the YAML file from the path
             try:
                 with open(controllers_yaml_file_path, 'r') as file:
                     yaml_content = yaml.safe_load(file)
 
+                    # Reading all configured controllers inside /**:controller_manager:ros__parameters from *.yaml file
                     for controller_name, _ in yaml_content["/**"]["controller_manager"]["ros__parameters"].items():
                         if(controller_name != "update_rate"):
 
@@ -196,7 +203,6 @@ def launch_setup(context, *args, **kwargs):
                             )
 
                             nodes.append(node_ros2_control)
-
             except FileNotFoundError:
                 print(f"File not found: {controllers_yaml_file_path}")
             except yaml.YAMLError as exc:
