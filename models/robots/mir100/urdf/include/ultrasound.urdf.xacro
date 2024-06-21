@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:macro name="ultrasound_hcsr04" params="side orientation prefix">
+        <joint name="${prefix}us_${side}_joint" type="fixed">   <!-- right ultrasound -->
+            <parent link="${prefix}base_link" />
+            <child link="${prefix}us_${side}_frame" />
+            <origin xyz="0.45 ${orientation*0.12} 0.16 " rpy="0 0 0" />  <!-- from visually matching to the mesh of the MiR -->
+        </joint>
+
+        <link name="${prefix}us_${side}_frame" />
+
+        <gazebo reference="${prefix}us_${side}_frame">
+            <sensor name="${side}_ultrasound" type="ray">
+                <always_on>true</always_on>
+                <visualize>false</visualize>
+                <pose>0.0 0 0.0 0 0 0</pose>
+                <update_rate>10</update_rate>
+                <ray>
+                    <scan>
+                        <horizontal>
+                            <samples>5</samples>
+                            <resolution>1.0</resolution>
+                            <min_angle>-0.14835</min_angle>
+                            <max_angle>0.14835</max_angle>
+                        </horizontal>
+                        <vertical>
+                            <samples>5</samples>
+                            <resolution>1.0</resolution>
+                            <min_angle>-0.14835</min_angle>
+                            <max_angle>0.14835</max_angle>
+                        </vertical>
+                    </scan>
+                    <range>
+                        <min>0.02</min>
+                        <max>2</max>
+                        <resolution>0.003</resolution>
+                    </range>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0.0</mean>
+                        <stddev>0.01</stddev>
+                    </noise>
+                </ray>
+                <plugin name="${side}_ultrasound" filename="libgazebo_ros_ray_sensor.so">
+                    <ros>
+                        <namespace>$(arg model_name)/ultrasound_sensor_broadcaster</namespace>
+                        <remapping>${side}_ultrasound/out:=${side}_ultrasound/scan</remapping>
+                    </ros>
+                    <output_type>sensor_msgs/Range</output_type>
+                    <radiation_type>ultrasound</radiation_type>
+                    <frame_name>${prefix}us_${side}_frame</frame_name>
+                </plugin>
+            </sensor>
+            <material>Gazebo/Blue</material>
+        </gazebo>
+  </xacro:macro>
+</robot>

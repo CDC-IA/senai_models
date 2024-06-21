@@ -39,7 +39,7 @@
       <hardware>
         <plugin>gazebo_ros2_control/GazeboSystem</plugin>
       </hardware>
-      <joint name="left_wheel_joint">
+      <joint name="${prefix}left_wheel_joint">
         <command_interface name="velocity">
             <param name="min">-10</param>
             <param name="max">10</param>
@@ -47,7 +47,7 @@
         <state_interface name="position" />
         <state_interface name="velocity" />
       </joint>
-      <joint name="right_wheel_joint">
+      <joint name="${prefix}right_wheel_joint">
           <command_interface name="velocity">
               <param name="min">-10</param>
               <param name="max">10</param>
@@ -83,7 +83,7 @@
       <hardware>
         <plugin>ign_ros2_control/IgnitionSystem</plugin>
       </hardware>
-      <joint name="left_wheel_joint">
+      <joint name="${prefix}left_wheel_joint">
         <command_interface name="velocity">
             <param name="min">-10</param>
             <param name="max">10</param>
@@ -91,7 +91,7 @@
         <state_interface name="position" />
         <state_interface name="velocity" />
       </joint>
-      <joint name="right_wheel_joint">
+      <joint name="${prefix}right_wheel_joint">
           <command_interface name="velocity">
               <param name="min">-10</param>
               <param name="max">10</param>

@@ -1,0 +1,10 @@
+/**:
+  velocity_controller:
+    ros__parameters:
+      joints:
+        - r2d2/left_wheel_joint
+        - r2d2/right_wheel_joint
+      command_interfaces:
+        - velocity
+      state_interfaces:
+        - velocity

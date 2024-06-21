@@ -68,7 +68,8 @@ def launch_setup(context, *args, **kwargs):
     # Create a dictionary of xacro arguments
     xacro_args = {
         'model_name': model_name,
-        'gazebo_version': default_gazebo
+        'gazebo_version': default_gazebo,
+        'tf_prefix': model_name
     }
 
     # Use xacro to process the file
@@ -91,27 +92,6 @@ def launch_setup(context, *args, **kwargs):
 
     nodes = [node_robot_state_publisher]
 
-    if (launch_rviz2 == "true"):
-        # Loading Joint_State_Publisher_Gui Node
-        node_joint_state_publisher_gui = Node(
-            package='joint_state_publisher_gui',
-            executable='joint_state_publisher_gui',
-            output='screen',
-            namespace=[model_ns]
-        )
-
-        nodes.append(node_joint_state_publisher_gui)
-
-        # Loading RViZ2 Node
-        node_rviz2 = Node(
-            package='rviz2',
-            executable='rviz2',
-            output='screen',
-            arguments=['-d', os.path.join(get_package_share_directory(pkg_name), rviz_subpath)] 
-        )
-
-        nodes.append(node_rviz2)
-
     if (launch_gazebo == "true"):
 
         # Launch Gazebo
@@ -121,7 +101,7 @@ def launch_setup(context, *args, **kwargs):
             node_gazebo = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
                     [os.path.join(
-                        FindPackageShare('gazebo_ros').find('gazebo_ros'), 'launch', 'gazebo.launch.py'
+                        FindPackageShare('gazebo_ros').find('gazebo_ros'), 'launch', "gazebo.launch.py" #'gzserver.launch.py'
                     )]
                 )
             )
@@ -134,8 +114,8 @@ def launch_setup(context, *args, **kwargs):
                 output='screen',
                 arguments=[
                     "-topic", robot_description_node_name, 
-                    "-entity", model_name,
-                    "-z", "0.1",
+                    "-entity", model_name
+                    #"-z", "0.2",
                 ]
             )
             nodes.append(node_gazebo_spawn)
@@ -190,22 +170,52 @@ def launch_setup(context, *args, **kwargs):
                     yaml_content = yaml.safe_load(file)
 
                     # Reading all configured controllers inside /**:controller_manager:ros__parameters from *.yaml file
-                    for controller_name, _ in yaml_content["/**"]["controller_manager"]["ros__parameters"].items():
-                        if(controller_name != "update_rate"):
-
+                    for controller_name, values in yaml_content["/**"]["controller_manager"]["ros__parameters"].items():
+                        if(controller_name != "update_rate" and controller_name != "use_sim_time"):
+                            
                             # Spawning controller/broadcaster
-                            node_ros2_control = Node(
-                                package='controller_manager',
-                                executable='spawner',
-                                namespace=model_name,
-                                arguments=[controller_name],
-                                output='screen',
-                            )
+                            if("filepath" in values):
+                                node_ros2_control = Node(
+                                    package='controller_manager',
+                                    executable='spawner',
+                                    #namespace=model_name,
+                                    arguments=[controller_name, "-p", values["filepath"], "-c", "/r2d2/controller_manager"],
+                                    output='screen',
+                                )
+                            else:
+                                node_ros2_control = Node(
+                                    package='controller_manager',
+                                    executable='spawner',
+                                    namespace=model_name,
+                                    arguments=[controller_name],
+                                    output='screen',
+                                )
 
                             nodes.append(node_ros2_control)
             except FileNotFoundError:
                 print(f"File not found: {controllers_yaml_file_path}")
             except yaml.YAMLError as exc:
                 print("Error parsing YAML content:", exc)
+
+    if (launch_rviz2 == "true"):
+        # Loading Joint_State_Publisher_Gui Node
+        node_joint_state_publisher_gui = Node(
+            package='joint_state_publisher_gui',
+            executable='joint_state_publisher_gui',
+            output='screen',
+            namespace=[model_ns]
+        )
+
+        nodes.append(node_joint_state_publisher_gui)
+
+        # # Loading RViZ2 Node
+        # node_rviz2 = Node(
+        #     package='rviz2',
+        #     executable='rviz2',
+        #     output='screen',
+        #     arguments=['-d', os.path.join(get_package_share_directory(pkg_name), rviz_subpath)] 
+        # )
+
+        # nodes.append(node_rviz2)
 
     return nodes

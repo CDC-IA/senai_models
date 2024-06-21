@@ -62,10 +62,10 @@
         </ray>
         <xacro:if value="${gazebo_version == 'classic'}">
           <xacro:property name="sensor_name" value="${link.replace('_link','')}"/>
-          <plugin name="lidar_sensor_broadcaster_${sensor_name}" filename="libgazebo_ros_ray_sensor.so">
+          <plugin name="${sensor_name}" filename="libgazebo_ros_ray_sensor.so">
             <ros>
               <namespace>/$(arg model_name)/lidar_sensor_broadcaster</namespace>
-              <remapping>lidar_sensor_broadcaster_${sensor_name}/out:=${sensor_name}/scan</remapping>
+              <remapping>${sensor_name}/out:=${sensor_name}/scan</remapping>
             </ros>
             <output_type>sensor_msgs/LaserScan</output_type> 
             <frame_name>${prefix}${link}</frame_name>

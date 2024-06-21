@@ -5,6 +5,7 @@
   <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/mir_100.gazebo.xacro" />
   <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/mir_100.transmission.xacro" />
   <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/sick_s300.urdf.xacro" />
+  <xacro:include filename="$(find senai_models)/models/${model_class}/${model}/urdf/include/ultrasound.urdf.xacro" />
 
   <xacro:property name="deg_to_rad" value="0.017453293" />
 
@@ -203,21 +204,8 @@
     <xacro:sick_s300 prefix="${prefix}" link="back_laser_link" topic="b_scan" />
 
     <!-- Ultrasound sensors -->
-    <joint name="${prefix}us_1_joint" type="fixed">   <!-- right ultrasound -->
-      <parent link="${prefix}base_link" />
-      <child link="${prefix}us_1_frame" />
-      <origin xyz="0.45 -0.12 0.16 " rpy="0 0 0" />  <!-- from visually matching to the mesh of the MiR -->
-    </joint>
-
-    <link name="${prefix}us_1_frame" />
-
-    <joint name="${prefix}us_2_joint" type="fixed">   <!-- left ultrasound -->
-      <parent link="${prefix}base_link" />
-      <child link="${prefix}us_2_frame" />
-      <origin xyz="0.45 0.12 0.16 " rpy="0 0 0" />  <!-- from visually matching to the mesh of the MiR -->
-    </joint>
-
-    <link name="${prefix}us_2_frame" />
+    <xacro:ultrasound_hcsr04 side="right" orientation="-1" prefix="${prefix}"/>
+    <xacro:ultrasound_hcsr04 side="left" orientation="1" prefix="${prefix}"/>
 
     <!-- wheels -->
     <xacro:actuated_wheel prefix="${prefix}" locationprefix="left" locationright="-1"/>
