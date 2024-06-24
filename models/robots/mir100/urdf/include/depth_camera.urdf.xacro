@@ -27,21 +27,29 @@
         <gazebo reference="${prefix}camera_link">
             <material>Gazebo/Red</material>
 
+            <!-- https://www.intelrealsense.com/depth-camera-d435/ -->
+
             <sensor name="camera" type="depth">
                 <pose> 0 0 0 0 0 0 </pose>
                 <visualize>false</visualize>
-                <update_rate>60</update_rate>
+                <update_rate>90</update_rate>
                 <camera>
-                    <horizontal_fov>1.089</horizontal_fov>
+                    <horizontal_fov>1.518436</horizontal_fov>
                     <image>
                         <format>B8G8R8</format>
-                        <width>640</width>
-                        <height>480</height>
+                        <width>1280</width>
+                        <height>720</height>
                     </image>
                     <clip>
-                        <near>0.05</near>
+                        <near>0.028</near>
                         <far>8.0</far>
                     </clip>
+                    <depth_camera>
+                        <clip>
+                            <near>0.028</near>
+                            <far>2.0</far>
+                        </clip>
+                    </depth_camera>
                 </camera>
                 <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
                     <ros>
