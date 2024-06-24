@@ -92,6 +92,27 @@ def launch_setup(context, *args, **kwargs):
 
     nodes = [node_robot_state_publisher]
 
+    if (launch_rviz2 == "true"):
+        # Loading RViZ2 Node
+        node_rviz2 = Node(
+            package='rviz2',
+            executable='rviz2',
+            output='screen',
+            arguments=['-d', os.path.join(get_package_share_directory(pkg_name), rviz_subpath)] 
+        )
+
+        nodes.append(node_rviz2)
+
+        # Loading Joint_State_Publisher_Gui Node
+        node_joint_state_publisher_gui = Node(
+            package='joint_state_publisher_gui',
+            executable='joint_state_publisher_gui',
+            output='screen',
+            namespace=[model_ns]
+        )
+
+        nodes.append(node_joint_state_publisher_gui)
+
     if (launch_gazebo == "true"):
 
         # Launch Gazebo
@@ -179,16 +200,16 @@ def launch_setup(context, *args, **kwargs):
                                     package='controller_manager',
                                     executable='spawner',
                                     #namespace=model_name,
-                                    arguments=[controller_name, "-p", values["filepath"], "-c", "/r2d2/controller_manager"],
+                                    arguments=[controller_name, "-p", values["filepath"], "-c", '/'+model_name+"/controller_manager"],
                                     output='screen',
                                 )
                             else:
                                 node_ros2_control = Node(
                                     package='controller_manager',
                                     executable='spawner',
-                                    namespace=model_name,
-                                    arguments=[controller_name],
-                                    output='screen',
+                                    #namespace=model_name,
+                                    arguments=[controller_name, "-c", '/'+model_name+"/controller_manager"],
+                                    output='screen'
                                 )
 
                             nodes.append(node_ros2_control)
@@ -196,26 +217,5 @@ def launch_setup(context, *args, **kwargs):
                 print(f"File not found: {controllers_yaml_file_path}")
             except yaml.YAMLError as exc:
                 print("Error parsing YAML content:", exc)
-
-    if (launch_rviz2 == "true"):
-        # Loading Joint_State_Publisher_Gui Node
-        node_joint_state_publisher_gui = Node(
-            package='joint_state_publisher_gui',
-            executable='joint_state_publisher_gui',
-            output='screen',
-            namespace=[model_ns]
-        )
-
-        nodes.append(node_joint_state_publisher_gui)
-
-        # # Loading RViZ2 Node
-        # node_rviz2 = Node(
-        #     package='rviz2',
-        #     executable='rviz2',
-        #     output='screen',
-        #     arguments=['-d', os.path.join(get_package_share_directory(pkg_name), rviz_subpath)] 
-        # )
-
-        # nodes.append(node_rviz2)
 
     return nodes

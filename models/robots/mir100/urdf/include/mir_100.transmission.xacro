@@ -4,7 +4,8 @@
   <xacro:macro name="mir_100_wheel_transmission" params="prefix locationprefix">
     <transmission name="${prefix}${locationprefix}_wheel_trans">
       <type>transmission_interface/SimpleTransmission</type>
-      <joint name="${prefix}${locationprefix}_wheel_joint">
+      <!-- <joint name="${prefix}${locationprefix}_wheel_joint"> -->
+      <joint name="${locationprefix}_wheel_joint">
         <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
       </joint>
       <actuator name="${prefix}${locationprefix}_wheel_motor">
