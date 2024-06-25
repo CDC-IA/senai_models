@@ -19,15 +19,15 @@
         <update_rate>100</update_rate>  <!-- this is not the publish rate -->
         <visualize>true</visualize>
         <topic>/model/$(arg model_name)/imu_data</topic>
-        <plugin filename="ignition-gazebo-imu-system" name="gz::sim::systems::Imu">
+        <!-- <plugin filename="ignition-gazebo-imu-system" name="gz::sim::systems::Imu">
           <topicName>${imu_topic}</topicName>
           <bodyName>${link}</bodyName>
-          <updateRateHZ>${update_rate}</updateRateHZ>  <!-- this is the publish rate -->
+          <updateRateHZ>${update_rate}</updateRateHZ>  <!- this is the publish rate ->
           <gaussianNoise>${stdev * stdev}</gaussianNoise>
           <xyzOffset>0 0 0</xyzOffset>
           <rpyOffset>0 0 0</rpyOffset>
-          <frameName>${imu_frame}</frameName>  <!-- from real MiR -->
-        </plugin>
+          <frameName>${imu_frame}</frameName>  <!- from real MiR ->
+        </plugin> -->
         <pose>0 0 0 0 0 0</pose>
       </sensor>
     </gazebo>
